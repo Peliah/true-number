@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { LoginForm } from "./login-form";
 import { SignupForm } from "./sign-up-form";
 import { LoginFormData, SignupFormData } from "@/schema/auth-schema";
+import { useRouter } from "next/navigation";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-
+  const router = useRouter();
   const handleLoginSubmit = (data: LoginFormData) => {
     console.log("Login data:", data);
+    router.push("/game");
     // Handle login logic here
   };
 
