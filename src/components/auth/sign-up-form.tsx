@@ -18,7 +18,6 @@ import { registerAction } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-
 export function SignupForm() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
@@ -35,21 +34,29 @@ export function SignupForm() {
         },
     });
 
+
     async function onSubmit(data: SignupFormData) {
         setIsLoading(true);
         setError("");
 
         try {
             const result = await registerAction(data);
-            console.log(result.error);
 
-            if (result.error) {
+            if (result.fieldErrors) {
+                for (const [field, message] of Object.entries(result.fieldErrors)) {
+                    form.setError(field as keyof SignupFormData, { type: "server", message });
+                }
+            }
+
+            if (result.error && !result.fieldErrors) {
                 toast.error(result.error, {
                     description: "Please check your details and try again",
                     duration: 3000,
                 });
                 setError(result.error);
-            } else if (result.success) {
+            }
+
+            if (result.success) {
                 toast.success("Account created successfully!", {
                     description: "Redirecting to game page...",
                     duration: 3000,

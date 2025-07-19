@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { GameHeader } from '@/components/game/game-header';
 import { GameControls } from '@/components/game/game-controls';
 import { HistoryDialog } from '@/components/game/history-dialog';
 import { GameState, GameResult } from '@/type/types';
 import { saveGameAction } from '@/actions/game';
-import { Navbar } from '@/components/miscellenous/navbar';
 import { useUserStore } from '@/store/user.store';
 
 export default function GamePage() {
@@ -18,11 +17,8 @@ export default function GamePage() {
     const [showHistory, setShowHistory] = useState(false);
 
     // Get user from store
-    const { user, fetchCurrentUser } = useUserStore();
+    const { user } = useUserStore();
 
-    useEffect(() => {
-        fetchCurrentUser();
-    }, [fetchCurrentUser]);
 
     const generateNumber = async () => {
         const generatedNumber = Math.floor(Math.random() * 101);
@@ -93,7 +89,6 @@ export default function GamePage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            {user && <Navbar user={user} />}
             <GameHeader
                 balance={gameState.balance}
                 onHistoryClick={() => setShowHistory(true)}

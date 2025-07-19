@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { User } from '@/type/types';
 import { getCurrentUserAction } from '@/actions/user';
+import { logoutAction } from '@/actions/auth';
 
 interface UserStore {
     user: User | null;
@@ -10,9 +11,10 @@ interface UserStore {
     setUser: (user: User | null) => void;
     fetchCurrentUser: () => Promise<void>;
     clearUser: () => void;
+    logout: () => Promise<void>; // ✅ new
 }
 
-export const useUserStore = create<UserStore>((set) => ({
+export const useUserStore = create<UserStore>((set, get) => ({
     user: null,
     loading: false,
     error: null,
@@ -37,4 +39,13 @@ export const useUserStore = create<UserStore>((set) => ({
     },
 
     clearUser: () => set({ user: null }),
+
+    logout: async () => {
+        try {
+            await logoutAction();
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+        get().clearUser();
+    },
 }));

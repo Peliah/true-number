@@ -18,7 +18,7 @@ export async function getCurrentUserAction() {
             },
         });
 
-        return { success: true, user: response.data };
+        return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
             console.log(error.response?.data);

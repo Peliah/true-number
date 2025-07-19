@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { loginSchema, LoginFormData } from "@/schema/auth-schema";
 import { serverApi, createAuthedServerApi } from "@/actions/api";
 import { AxiosError } from "axios";
-import { RegisterCredentials } from "@/type/auth";
+import { RegisterCredentials, RegisterResult } from "@/type/auth";
 
 export async function loginAction(data: LoginFormData) {
   const validatedFields = loginSchema.safeParse(data);
@@ -108,7 +108,7 @@ export async function refreshTokenAction() {
   }
 }
 
-export async function registerAction(data: RegisterCredentials) {
+export async function registerAction(data: RegisterCredentials): Promise<RegisterResult> {
   try {
     const response = await serverApi.post("/auth/register", data);
     const result = response.data;
@@ -132,10 +132,20 @@ export async function registerAction(data: RegisterCredentials) {
     });
     return { success: true, data: response.data };
   } catch (error) {
-
     if (error instanceof AxiosError) {
-      console.log(error.response?.data);
-      return { error: error.response?.data || "Registration failed" };
+      const apiError = error.response?.data;
+
+      if (apiError?.code === "ValidationError") {
+        const fieldErrors: Record<string, string> = {};
+        for (const key in apiError.errors) {
+          if (apiError.errors[key]?.msg) {
+            fieldErrors[key] = apiError.errors[key].msg;
+          }
+        }
+        return { error: "Validation failed", fieldErrors };
+      }
+
+      return { error: apiError?.message || "Registration failed" };
     }
     return { error: "Registration failed" };
   }

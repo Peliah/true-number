@@ -16,3 +16,10 @@ export interface RegisterCredentials {
     password: string;
     phone: string;
 }
+
+export interface RegisterResult {
+    success?: boolean;
+    data?: unknown;
+    error?: string;
+    fieldErrors?: Record<string, string>;
+}
