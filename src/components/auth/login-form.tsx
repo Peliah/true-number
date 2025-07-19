@@ -3,6 +3,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/schema/auth-schema";
+import { loginAction } from "@/actions/auth";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
     Form,
     FormControl,
@@ -14,11 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-interface LoginFormProps {
-    onSubmit: (data: LoginFormData) => void;
-}
+export function LoginForm() {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
-export function LoginForm({ onSubmit }: LoginFormProps) {
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -27,9 +30,30 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
         },
     });
 
+    async function onSubmit(data: LoginFormData) {
+        setIsLoading(true);
+        setError("");
+
+        const result = await loginAction(data);
+        console.log(result);
+
+        if (result.error) {
+            setError(result.error);
+        } else if (result.success) {
+            router.push("/game");
+            router.refresh();
+        }
+
+        setIsLoading(false);
+    }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {error && (
+                    <div className="text-red-500 text-sm text-center">{error}</div>
+                )}
+
                 <FormField
                     control={form.control}
                     name="email"
@@ -37,7 +61,12 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input placeholder="your@email.com" {...field} />
+                                <Input
+                                    placeholder="Enter your email"
+                                    type="email"
+                                    disabled={isLoading}
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -51,15 +80,20 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <Input type="password" placeholder="••••••" {...field} />
+                                <Input
+                                    placeholder="Enter your password"
+                                    type="password"
+                                    disabled={isLoading}
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
 
-                <Button type="submit" className="w-full">
-                    Login
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Logging in..." : "Login"}
                 </Button>
             </form>
         </Form>

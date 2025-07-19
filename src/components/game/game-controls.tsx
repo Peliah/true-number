@@ -20,7 +20,7 @@ export function GameControls({ onGenerateNumber }: GameControlsProps) {
                     </p>
                     <Button
                         onClick={onGenerateNumber}
-                        className="w-full"
+                        className="w-full py-10"
                         size="lg"
                     >
                         Generate Number

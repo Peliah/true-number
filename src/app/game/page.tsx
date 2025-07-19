@@ -6,6 +6,7 @@ import { GameHeader } from '@/components/game/game-header';
 import { GameControls } from '@/components/game/game-controls';
 import { HistoryDialog } from '@/components/game/history-dialog';
 import { GameState, GameResult } from '@/type/types';
+import { saveGameAction } from '@/actions/game';
 
 export default function GamePage() {
     const [gameState, setGameState] = useState<GameState>({
@@ -15,7 +16,7 @@ export default function GamePage() {
 
     const [showHistory, setShowHistory] = useState(false);
 
-    const generateNumber = () => {
+    const generateNumber = async () => {
         const generatedNumber = Math.floor(Math.random() * 101);
         let result: 'win' | 'lose';
         let pointsChange: number;
@@ -60,8 +61,29 @@ export default function GamePage() {
 
         setGameState(prev => ({
             balance: newBalance,
-            history: [newResult, ...prev.history], // Newest first
+            history: [newResult, ...prev.history],
         }));
+
+        try {
+            const response = await saveGameAction({
+                generatedNumber,
+                newBalance,
+                result,
+            });
+            console.log(response.data);
+
+            if (response.success) {
+                toast.success('Game result saved successfully!');
+            }
+            else {
+                toast.error('Failed to save game result.');
+            }
+
+        } catch (error) {
+            console.error('Error saving game result:', error);
+            toast.error('Failed to save game result. Please try again later.');
+
+        }
     };
 
     return (
@@ -71,7 +93,9 @@ export default function GamePage() {
                 onHistoryClick={() => setShowHistory(true)}
             />
 
-            <GameControls onGenerateNumber={generateNumber} />
+            <div className='w-full md:w-1/2 mx-auto'>
+                <GameControls onGenerateNumber={generateNumber} />
+            </div>
 
             <HistoryDialog
                 open={showHistory}
