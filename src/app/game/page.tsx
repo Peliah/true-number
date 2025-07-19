@@ -1,20 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { GameHeader } from '@/components/game/game-header';
 import { GameControls } from '@/components/game/game-controls';
 import { HistoryDialog } from '@/components/game/history-dialog';
 import { GameState, GameResult } from '@/type/types';
 import { saveGameAction } from '@/actions/game';
+import { Navbar } from '@/components/miscellenous/navbar';
+import { useUserStore } from '@/store/user.store';
 
 export default function GamePage() {
     const [gameState, setGameState] = useState<GameState>({
         balance: 0,
         history: [],
     });
-
     const [showHistory, setShowHistory] = useState(false);
+
+    // Get user from store
+    const { user, fetchCurrentUser } = useUserStore();
+
+    useEffect(() => {
+        fetchCurrentUser();
+    }, [fetchCurrentUser]);
 
     const generateNumber = async () => {
         const generatedNumber = Math.floor(Math.random() * 101);
@@ -69,25 +77,23 @@ export default function GamePage() {
                 generatedNumber,
                 newBalance,
                 result,
+                userId: user!._id,
             });
-            console.log(response.data);
 
             if (response.success) {
                 toast.success('Game result saved successfully!');
-            }
-            else {
+            } else {
                 toast.error('Failed to save game result.');
             }
-
         } catch (error) {
             console.error('Error saving game result:', error);
             toast.error('Failed to save game result. Please try again later.');
-
         }
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
+            {user && <Navbar user={user} />}
             <GameHeader
                 balance={gameState.balance}
                 onHistoryClick={() => setShowHistory(true)}

@@ -62,7 +62,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
       }
     } catch (error) {
-      // Refresh failed, treat as no token
+      // Refresh failed, treat as no 
+      // valid token and redirect to login
+      console.error("Token refresh error:", error);
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 

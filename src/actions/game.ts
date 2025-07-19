@@ -5,10 +5,8 @@ import { createAuthedServerApi } from "@/actions/api";
 import { AxiosError } from "axios";
 import { Game } from "@/type/types";
 
-export async function saveGameAction(gameData: Omit<Game, 'userId'>) {
+export async function saveGameAction(gameData: Game) {
     const accessToken = (await cookies()).get("access_token")?.value;
-    const userId = (await cookies()).get("user")?.value;
-    console.log(accessToken);
 
     if (!accessToken) {
         return { error: "Not authenticated" };
@@ -18,7 +16,7 @@ export async function saveGameAction(gameData: Omit<Game, 'userId'>) {
         const authedApi = createAuthedServerApi(accessToken);
 
 
-        const response = await authedApi.post("/games/play", { ...gameData, userId });
+        const response = await authedApi.post("/games/play", gameData);
 
         return { success: true, data: response.data };
     } catch (error) {
