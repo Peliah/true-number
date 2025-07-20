@@ -2,35 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { refreshTokenAction } from "./actions/auth";
 
-// export function middleware(request: NextRequest) {
-//   const accessToken = request.cookies.get("access_token")?.value;
-
-//   const isAuthPage = request.nextUrl.pathname === "/" ||
-//     request.nextUrl.pathname.startsWith("/auth");
-//   const isProtectedPage = request.nextUrl.pathname.startsWith("/game") ||
-//     request.nextUrl.pathname.startsWith("/dashboard");
-
-//   // If user is not authenticated
-//   if (!accessToken) {
-//     // Redirect to home/login if trying to access protected pages
-//     if (isProtectedPage) {
-//       return NextResponse.redirect(new URL("/", request.url));
-//     }
-//     // Allow access to auth pages (including home page)
-//     return NextResponse.next();
-//   }
-
-//   // If user is authenticated
-//   if (accessToken) {
-//     // Redirect away from auth pages to dashboard
-//     if (isAuthPage) {
-//       return NextResponse.redirect(new URL("/game", request.url));
-//     }
-//   }
-
-//   return NextResponse.next();
-// }
-
 function isTokenExpired(token: string): boolean {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -41,6 +12,18 @@ function isTokenExpired(token: string): boolean {
   }
 }
 
+function getUserFromToken(token: string): { userId: string; role: string } | null {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return {
+      userId: payload.userId,
+      role: payload.role
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("access_token")?.value;
 
@@ -48,6 +31,7 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/auth");
   const isProtectedPage = request.nextUrl.pathname.startsWith("/game") ||
     request.nextUrl.pathname.startsWith("/dashboard");
+  const isDashboardPage = request.nextUrl.pathname.startsWith("/dashboard");
 
   // Check if token exists and is valid
   const hasValidToken = accessToken && !isTokenExpired(accessToken);
@@ -62,8 +46,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
       }
     } catch (error) {
-      // Refresh failed, treat as no 
-      // valid token and redirect to login
+      // Refresh failed, treat as no valid token and redirect to login
       console.error("Token refresh error:", error);
       return NextResponse.redirect(new URL("/", request.url));
     }
@@ -82,6 +65,20 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  // Check admin access for dashboard pages
+  if (isDashboardPage && hasValidToken && accessToken) {
+    const user = getUserFromToken(accessToken);
+
+    if (!user) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    // If user is not an admin, redirect to game page
+    if (user.role !== 'admin') {
+      return NextResponse.redirect(new URL("/game", request.url));
+    }
+  }
+
   // User has valid token - redirect from auth pages
   if (isAuthPage) {
     return NextResponse.redirect(new URL("/game", request.url));
@@ -89,6 +86,7 @@ export async function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
+
 export const config = {
   matcher: [
     /*
