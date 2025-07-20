@@ -30,23 +30,41 @@ export async function getCurrentUserAction() {
 };
 
 // get all users
-export async function getAllUsersAction() {
+export async function getAllUsersAction({ limit = 10, offset = 0 } = {}) {
     const accessToken = (await cookies()).get("access_token")?.value;
 
     if (!accessToken) {
         return { error: "Not authenticated" };
     }
+
     try {
-        const response = await api.get("/users");
-        return { success: true, users: response.data.users };
+        const response = await api.get("/users", {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                limit,
+                offset,
+            },
+        });
+
+        return {
+            success: true,
+            users: response.data.users,
+            total: response.data.total,
+            limit: response.data.limit,
+            offset: response.data.offset,
+        };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
+            console.error("Error fetching users:", error.response?.data);
             return { error: error.response?.data || "Failed to get users" };
         }
+
         return { error: "Failed to get users" };
     }
-};
+}
+
 
 // get user by id
 export async function getUserByIdAction(id: string) {

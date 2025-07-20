@@ -28,7 +28,7 @@ export async function getHistoryAction() {
     }
 };
 
-export async function getAllHistory() {
+export async function getAllHistoryAction() {
     const accessToken = (await cookies()).get("access_token")?.value;
 
     if (!accessToken) {
