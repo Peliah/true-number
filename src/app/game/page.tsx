@@ -1,71 +1,81 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { GameHeader } from '@/components/game/game-header';
 import { GameControls } from '@/components/game/game-controls';
-import { HistoryDialog } from '@/components/game/history-dialog';
+import { GameHistorySection } from '@/components/game/game-history-section';
 import { GameState, GameResult } from '@/type/types';
 import { saveGameAction } from '@/actions/game';
 import { useUserStore } from '@/store/user.store';
+import { getHistoryAction } from '@/actions/history';
 
 export default function GamePage() {
     const [gameState, setGameState] = useState<GameState>({
         balance: 0,
         history: [],
     });
-    const [showHistory, setShowHistory] = useState(false);
-
-    // Get user from store
+    const [loadingHistory, setLoadingHistory] = useState(false);
     const { user } = useUserStore();
 
+    useEffect(() => {
+        const fetchHistory = async () => {
+            if (!user?._id) return;
+
+            setLoadingHistory(true);
+            try {
+                const response = await getHistoryAction();
+                if (response.success && response.history) {
+                    setGameState(prev => ({
+                        ...prev,
+                        history: response.history
+                    }));
+                }
+            } catch (error) {
+                console.error('Error fetching history:', error);
+                toast.error('Failed to load game history');
+            } finally {
+                setLoadingHistory(false);
+            }
+        };
+
+        fetchHistory();
+    }, [user?._id]);
 
     const generateNumber = async () => {
-        const generatedNumber = Math.floor(Math.random() * 101);
-        let result: 'win' | 'lose';
-        let pointsChange: number;
-
-        if (generatedNumber > 70 && generatedNumber <= 100) {
-            result = 'win';
-            pointsChange = 50;
-            toast.success(
-                <div className="flex flex-col">
-                    <span className="font-bold">You won!</span>
-                    <span>Number generated: {generatedNumber}</span>
-                    <span className="text-green-500">+50 points</span>
-                </div>,
-                {
-                    duration: 5000,
-                }
-            );
-        } else {
-            result = 'lose';
-            pointsChange = -35;
-            toast.error(
-                <div className="flex flex-col">
-                    <span className="font-bold">You lost</span>
-                    <span>Number generated: {generatedNumber}</span>
-                    <span className="text-red-500">-35 points</span>
-                </div>,
-                {
-                    duration: 5000,
-                }
-            );
+        if (!user) {
+            toast.error('You must be logged in to play');
+            return;
         }
 
-        const newBalance = gameState.balance + pointsChange;
+        const generatedNumber = Math.floor(Math.random() * 101);
+        const result = generatedNumber > 70 ? 'win' : 'lose';
+        const balanceChange = result === 'win' ? 50 : -35;
 
+        (result === 'win' ? toast.success : toast.error)(
+            <div className="flex flex-col">
+                <span className="font-bold">You {result}!</span>
+                <span>Number generated: {generatedNumber}</span>
+                <span className={result === 'win' ? 'text-green-500' : 'text-red-500'}>
+                    {balanceChange > 0 ? '+' : ''}{balanceChange} points
+                </span>
+            </div>,
+            { duration: 5000 }
+        );
+
+        const newBalance = (gameState.history.at(-1)?.newBalance ?? 0) + balanceChange;
         const newResult: GameResult = {
             generatedNumber,
-            pointsChange,
+            balanceChange,
             result,
-            timestamp: new Date(),
+            date: new Date(),
             newBalance,
         };
 
+        // Update local state immediately
         setGameState(prev => ({
-            balance: newBalance,
-            history: [newResult, ...prev.history],
+            balance: newResult.newBalance,
+            history: [...prev.history, newResult],
         }));
 
         try {
@@ -73,35 +83,31 @@ export default function GamePage() {
                 generatedNumber,
                 newBalance,
                 result,
-                userId: user!._id,
+                userId: user._id,
             });
 
-            if (response.success) {
-                toast.success('Game result saved successfully!');
-            } else {
-                toast.error('Failed to save game result.');
+            if (!response.success) {
+                throw new Error('Failed to save game');
             }
         } catch (error) {
             console.error('Error saving game result:', error);
-            toast.error('Failed to save game result. Please try again later.');
+            toast.error('Failed to save game result');
         }
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
             <GameHeader
-                balance={gameState.balance}
-                onHistoryClick={() => setShowHistory(true)}
+                balance={gameState.history.at(-1)?.newBalance ?? 0}
             />
 
             <div className='w-full md:w-1/2 mx-auto'>
                 <GameControls onGenerateNumber={generateNumber} />
             </div>
 
-            <HistoryDialog
-                open={showHistory}
-                onOpenChange={setShowHistory}
+            <GameHistorySection
                 history={gameState.history}
+                isLoading={loadingHistory}
             />
         </div>
     );

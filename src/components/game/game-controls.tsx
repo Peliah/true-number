@@ -5,9 +5,10 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 interface GameControlsProps {
     onGenerateNumber: () => void;
+    disabled?: boolean;
 }
 
-export function GameControls({ onGenerateNumber }: GameControlsProps) {
+export function GameControls({ onGenerateNumber, disabled = false }: GameControlsProps) {
     return (
         <Card>
             <CardHeader>
@@ -20,10 +21,11 @@ export function GameControls({ onGenerateNumber }: GameControlsProps) {
                     </p>
                     <Button
                         onClick={onGenerateNumber}
+                        disabled={disabled}
                         className="w-full py-10"
                         size="lg"
                     >
-                        Generate Number
+                        {disabled ? 'Processing...' : 'Generate Number'}
                     </Button>
                     <div className="text-sm space-y-2">
                         <p>● Win: Number &gt; 70 → +50 points</p>

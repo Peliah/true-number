@@ -1,8 +1,8 @@
 export type GameResult = {
     generatedNumber: number;
-    pointsChange: number;
+    balanceChange: number;
     result: 'win' | 'lose';
-    timestamp: Date;
+    date: Date;
     newBalance: number;
 };
 

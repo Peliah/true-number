@@ -1,4 +1,3 @@
-
 import { Navbar } from "@/components/miscellenous/navbar";
 
 export default function GamePageLayout({
