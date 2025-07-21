@@ -40,6 +40,4 @@ export interface User {
     profilePicture?: string;
     bio?: string;
     balance: number;
-    createdAt: Date;
-    updatedAt: Date;
 }

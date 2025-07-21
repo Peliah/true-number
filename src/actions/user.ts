@@ -1,9 +1,9 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { api } from "./api";
+import { api, createAuthedServerApi } from "./api";
 import { AxiosError } from "axios";
-import { User } from "@/type/types";
+import { UserFormValues } from "@/schema/user-schema";
 
 export async function getCurrentUserAction() {
     const accessToken = (await cookies()).get("access_token")?.value;
@@ -86,14 +86,14 @@ export async function getUserByIdAction(id: string) {
 };
 
 // update userby id
-export async function updateUserByIdAction(id: string, data: User) {
+export async function updateUserByIdAction(id: string, data: UserFormValues) {
     const accessToken = (await cookies()).get("access_token")?.value;
 
     if (!accessToken) {
         return { error: "Not authenticated" };
     }
     try {
-        const response = await api.put(`/users/${id}`, data);
+        const response = await createAuthedServerApi(accessToken).put(`/users/${id}`, data);
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -107,12 +107,13 @@ export async function updateUserByIdAction(id: string, data: User) {
 // delete user by id
 export async function deleteUserByIdAction(id: string) {
     const accessToken = (await cookies()).get("access_token")?.value;
+    console.log(accessToken);
 
     if (!accessToken) {
         return { error: "Not authenticated" };
     }
     try {
-        const response = await api.delete(`/users/${id}`);
+        const response = await createAuthedServerApi(accessToken).delete(`/users/${id}`);
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -124,14 +125,14 @@ export async function deleteUserByIdAction(id: string) {
 };
 
 // create user
-export async function createUserAction(data: User) {
+export async function createUserAction(data: UserFormValues, password: string) {
     const accessToken = (await cookies()).get("access_token")?.value;
 
     if (!accessToken) {
         return { error: "Not authenticated" };
     }
     try {
-        const response = await api.post("/users", data);
+        const response = await createAuthedServerApi(accessToken).post("/users", { ...data, password });
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
