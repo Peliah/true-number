@@ -41,3 +41,25 @@ export interface User {
     bio?: string;
     balance: number;
 }
+
+export type GameStatus = 'pending' | 'active' | 'finished';
+
+export type Player = {
+    _id: string;
+    username: string;
+};
+
+export interface GameRoom {
+    _id: string;
+    creator: Player;          // player 1
+    joiner?: Player | null;   // player 2
+    bet: number;
+    timeout: number;
+    status: GameStatus;
+    turn: 1 | 2;
+    creatorNumber?: number;
+    joinerNumber?: number;
+    winner?: Player | null;
+    createdAt: string;
+    updatedAt: string;
+}

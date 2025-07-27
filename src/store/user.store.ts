@@ -11,7 +11,7 @@ interface UserStore {
     setUser: (user: User | null) => void;
     fetchCurrentUser: () => Promise<void>;
     clearUser: () => void;
-    logout: () => Promise<void>; // ✅ new
+    logout: () => Promise<void>;
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
