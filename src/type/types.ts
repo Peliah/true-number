@@ -51,8 +51,8 @@ export type Player = {
 
 export interface GameRoom {
     _id: string;
-    creator: Player;          // player 1
-    joiner?: Player | null;   // player 2
+    creator: Player;
+    joiner?: Player | null;
     bet: number;
     timeout: number;
     status: GameStatus;
