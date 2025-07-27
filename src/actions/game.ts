@@ -68,3 +68,22 @@ export async function createGameAction(gameData: GameRoom) {
         return { error: "Failed to create game" };
     }
 }
+
+export async function joinGameAction(gameId: string) {
+    const accessToken = (await cookies()).get("access_token")?.value;
+
+    if (!accessToken) {
+        return { error: "Not authenticated" };
+    }
+
+    try {
+        const response = await createAuthedServerApiV2(accessToken).post(`/games/${gameId}/join`);
+        return { success: true, data: response.data };
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.log(error.response?.data);
+            return { error: error.response?.data || "Failed to join game" };
+        }
+        return { error: "Failed to join game" };
+    }
+}
