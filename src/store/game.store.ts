@@ -6,9 +6,7 @@ interface GameStore {
     gameRooms: GameRoom[];
     isLoading: boolean;
     error: string | null;
-    token: string | null;
-
-    setToken: (token: string) => void;
+    addGame: (game: GameRoom) => void;
     fetchRooms: () => Promise<void>;
 }
 
@@ -16,16 +14,19 @@ export const useGameStore = create<GameStore>((set) => ({
     gameRooms: [],
     isLoading: false,
     error: null,
-    token: null,
 
-    setToken: (token: string) => set({ token }),
+    addGame: (game) =>
+        set((state) => ({
+            gameRooms: [game, ...(state.gameRooms || [])],
+        })),
 
     fetchRooms: async () => {
-
         set({ isLoading: true, error: null });
+
         try {
             const response = await getAllGamesAction();
-            if (response && response.success) {
+
+            if (response?.success) {
                 set({ gameRooms: response.games });
             } else {
                 set({ error: response.error || 'Failed to fetch games' });

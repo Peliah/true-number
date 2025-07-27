@@ -96,7 +96,7 @@ export default function GamePage() {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 font-roboto-mono">
             <GameHeader
                 balance={gameState.history.at(-1)?.newBalance ?? 0}
             />

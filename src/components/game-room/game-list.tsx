@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { GameRoom } from '@/type/types';
+import CreateRoomDialog from './create-room-dialog';
+import { Gamepad2Icon } from 'lucide-react';
 
 export default function GameRoomList() {
     const {
@@ -17,7 +19,7 @@ export default function GameRoomList() {
 
     useEffect(() => {
         fetchRooms();
-    }, []);
+    }, [fetchRooms]);
 
     const handleJoin = (roomId: string) => {
         console.log(`Joining room ${roomId}...`);
@@ -37,39 +39,45 @@ export default function GameRoomList() {
     if (error) return <p className="text-red-500">{error}</p>;
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {gameRooms && gameRooms.map((room: GameRoom) => (
-                <Card key={room._id} className="flex flex-col justify-between">
-                    <CardHeader>
-                        <CardTitle className="text-lg">
-                            Room #{room._id.slice(-5).toUpperCase()}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                            Created by <strong>{room.creator?.username || 'Unknown'}</strong>
-                        </p>
-                    </CardHeader>
+        <>
+            <header className="flex items-center justify-between w-full">
+                <h1 className="text-3xl font-bold flex items-center gap-4">Game Rooms <Gamepad2Icon className="w-10 h-10" /></h1>
+                <CreateRoomDialog />
+            </header>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {gameRooms && gameRooms.map((room: GameRoom) => (
+                    <Card key={room._id} className="flex flex-col justify-between">
+                        <CardHeader>
+                            <CardTitle className="text-lg">
+                                Room #{room._id.slice(-5).toUpperCase()}
+                            </CardTitle>
+                            <p className="text-sm text-muted-foreground">
+                                Created by <strong>{room.creator?.username || 'Unknown'}</strong>
+                            </p>
+                        </CardHeader>
 
-                    <CardContent className="space-y-2 text-sm">
-                        <p><strong>Status:</strong> {room.status}</p>
-                        <p><strong>Bet:</strong> {room.bet} coins</p>
-                        <p><strong>Timeout:</strong> {room.timeout} sec</p>
-                        <p>
-                            <strong>Joiner:</strong>{' '}
-                            {room.joiner?.username ?? <span className="italic text-muted-foreground">Waiting...</span>}
-                        </p>
+                        <CardContent className="space-y-2 text-sm">
+                            <p><strong>Status:</strong> {room.status}</p>
+                            <p><strong>Bet:</strong> {room.bet} coins</p>
+                            <p><strong>Timeout:</strong> {room.timeout} sec</p>
+                            <p>
+                                <strong>Joiner:</strong>{' '}
+                                {room.joiner?.username ?? <span className="italic text-muted-foreground">Waiting...</span>}
+                            </p>
 
-                        {room.status === 'pending' && (
-                            <Button
-                                size="sm"
-                                className="mt-3 w-full"
-                                onClick={() => handleJoin(room._id)}
-                            >
-                                Join Game
-                            </Button>
-                        )}
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
+                            {room.status === 'pending' && (
+                                <Button
+                                    size="sm"
+                                    className="mt-3 w-full"
+                                    onClick={() => handleJoin(room._id)}
+                                >
+                                    Join Game
+                                </Button>
+                            )}
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </>
     );
 }
