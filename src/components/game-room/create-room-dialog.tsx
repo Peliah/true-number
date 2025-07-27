@@ -38,9 +38,7 @@ export default function CreateRoomDialog() {
         try {
             setIsCreating(true);
             const newGame = await createGameAction({ bet: betVal, timeout: timeoutVal } as GameRoom);
-            addGame(newGame.data);
-            toast('Room created!', { description: 'Game room successfully created 🎉' });
-            console.log(newGame);
+            toast('Room created!', { description: 'Game room successfully created ' + newGame.data._id });
         } catch (error) {
             if (error instanceof AxiosError) {
                 toast.error("Error", {

@@ -63,3 +63,11 @@ export interface GameRoom {
     createdAt: string;
     updatedAt: string;
 }
+
+export enum EventType {
+    GAME_CREATED = 'gameCreated',
+    GAME_STARTED = 'gameStarted',
+    GAME_FINISHED = 'gameFinished',
+    JOIN_GAME = 'joinGameRoom',
+    PLAYER_FORFEIT = 'playerForfeit',
+}

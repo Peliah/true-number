@@ -1,14 +1,16 @@
 import { io, Socket } from "socket.io-client";
+import { getToken } from "./config";
 
-const URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000"; // Adjust this to your backend's origin
+const URL = "http://localhost:3000";
 
 let socket: Socket | null = null;
 
-export const getSocket = (): Socket => {
+export const getSocket = async (): Promise<Socket> => {
     if (!socket) {
         socket = io(URL, {
-            transports: ["websocket"], // optional, ensures a websocket connection
-            withCredentials: true,
+            auth: {
+                token: await getToken(),
+            }
         });
     }
     return socket;

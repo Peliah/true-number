@@ -5,9 +5,10 @@ import { useGameStore } from '@/store/game.store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { GameRoom } from '@/type/types';
+import { EventType, type GameRoom } from '@/type/types';
 import CreateRoomDialog from './create-room-dialog';
 import { Gamepad2Icon } from 'lucide-react';
+import { getSocket } from '@/lib/sockets';
 
 export default function GameRoomList() {
     const {
@@ -15,11 +16,43 @@ export default function GameRoomList() {
         fetchRooms,
         isLoading,
         error,
+        addGame
     } = useGameStore();
 
     useEffect(() => {
-        fetchRooms();
-    }, [fetchRooms]);
+        let socket: Awaited<ReturnType<typeof getSocket>> | null = null;
+
+        const setupSocket = async () => {
+            fetchRooms();
+            socket = await getSocket();
+            socket.on("connect", () => {
+                console.log("✅ Socket connected with id:", socket!.id);
+            });
+
+            socket.on("connect_error", (err) => {
+                console.error("❌ Socket connection error:", err.message);
+            });
+
+            socket.on("disconnect", (reason) => {
+                console.warn("⚠️ Socket disconnected:", reason);
+            });
+
+            socket.on(EventType.GAME_CREATED, (newRoom: GameRoom) => {
+                addGame(newRoom);
+            });
+        };
+
+        setupSocket();
+
+        return () => {
+            if (socket) {
+                socket.off(EventType.GAME_CREATED);
+                socket.off("connect");
+                socket.off("connect_error");
+                socket.off("disconnect");
+            }
+        };
+    }, [addGame]);
 
     const handleJoin = (roomId: string) => {
         console.log(`Joining room ${roomId}...`);
