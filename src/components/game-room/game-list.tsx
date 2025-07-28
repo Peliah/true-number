@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import CreateRoomDialog from './create-room-dialog';
 import { Gamepad2Icon } from 'lucide-react';
-import { EventType, type GameRoom } from '@/type/types';
+import { type GameRoom } from '@/type/types';
 import { useGameSocket } from '@/hooks/use-socket-listeners';
 
 export default function GameRoomList() {

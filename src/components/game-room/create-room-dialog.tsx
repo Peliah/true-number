@@ -13,7 +13,6 @@ import {
 import { Input } from '@/components/ui/input';
 // import { useToast } from '@/components/ui/use-toast';
 import { createGameAction } from '@/actions/game';
-import { useGameStore } from '@/store/game.store';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 import { GameRoom } from '@/type/types';

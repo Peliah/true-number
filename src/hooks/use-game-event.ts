@@ -56,5 +56,5 @@ export function useGameEvents({ gameId, onGameFinished, onGameStarted, onPlayerM
                 socket.off(EventType.PLAYER_MOVE);
             });
         };
-    }, [gameId, onGameFinished, updateGameRoom]);
+    }, [gameId, onGameFinished, onGameStarted, onPlayerMove, updateGameRoom]);
 }
