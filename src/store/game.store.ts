@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getAllGamesAction, getGameByIdAction, joinGameAction, playTurnAction } from '@/actions/game';
+import { forfietGame, getAllGamesAction, getGameByIdAction, joinGameAction, playTurnAction } from '@/actions/game';
 import { EventType, type GameRoom } from '@/type/types';
 import { toast } from 'sonner';
 import { getSocket } from '@/lib/sockets';
@@ -14,6 +14,7 @@ interface GameStore {
     updateGameRoom: (updatedRoom: GameRoom) => void;
     getGameRoom: (roomId: string) => Promise<GameRoom>;
     playGame: (roomId: string, generatedNumber: number) => Promise<GameRoom | undefined>;
+    forfeitGame: (roomId: string) => Promise<GameRoom | undefined>;
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -116,6 +117,34 @@ export const useGameStore = create<GameStore>((set) => ({
             return undefined;
         }
     },
+    forfeitGame: async (roomId) => {
+        try {
+            const response = await forfietGame(roomId);
+            if (response?.success && response.data) {
+                const game = response.data;
+                console.log('Forfiet game successfully:', game);
+                toast.success('Forfiet game successfully ' + game);
+
+                // Optionally update the store
+                set((state) => ({
+                    gameRooms: [
+                        game,
+                        ...state.gameRooms.filter((r) => r._id !== game._id),
+                    ],
+                }));
+
+                return game;
+            } else {
+                console.error('Failed to forfiet game:', response.error);
+                toast.error('Failed to forfiet game');
+                return undefined;
+            }
+        } catch (err) {
+            console.error('Error forfieting game:', err);
+            toast.error('Error forfieting game ' + (err as Error).message);
+            return undefined;
+        }
+    }
 
 
 }));

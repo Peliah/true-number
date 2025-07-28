@@ -46,10 +46,10 @@ export default function GamePage() {
             toast.error('Game not loaded yet');
             return;
         }
-        // if (gameState.status === 'finished') {
-        //     toast.error('Game already finished');
-        //     return;
-        // }
+        if (gameState.status === 'finished') {
+            toast.error('Game already finished');
+            return;
+        }
         if (gameState.status === 'pending') {
             toast.error('Game not started yet');
             return;
@@ -58,9 +58,9 @@ export default function GamePage() {
         const updatedGame = await playGame(gameState._id, generatedNumber);
 
         if (updatedGame) {
-            // if (updatedGame.status !== 'finished') {
-            setGameState(updatedGame);
-            // }
+            if (updatedGame.status !== 'finished') {
+                setGameState(updatedGame);
+            }
         }
     };
 
@@ -73,18 +73,6 @@ export default function GamePage() {
         },
         onGameFinished: (updatedGame) => {
             setGameState(updatedGame);
-            // let winner = 'Draw';
-
-
-            // if (updatedGame.winner) {
-            //     console.log(updatedGame);
-            //     if (updatedGame.creator === updatedGame.winner) {
-            //         winner = updatedGame.creator;
-            //     } else if (updatedGame.joiner === updatedGame.winner) {
-            //         winner = updatedGame.joiner;
-            //     }
-            // }
-
             setWinnerName(updatedGame.winner as string);
             setShowWinnerModal(true);
             toast.success('Game finished!');
@@ -98,6 +86,7 @@ export default function GamePage() {
                     balance={user.balance}
                     bet={gameState.bet}
                 />
+                // Display a nice timer
             )}
 
             <div className="w-full md:w-1/2 mx-auto">
