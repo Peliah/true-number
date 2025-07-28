@@ -59,7 +59,7 @@ export interface GameRoom {
     turn: 1 | 2;
     creatorNumber?: number;
     joinerNumber?: number;
-    winner?: Player | null;
+    winner?: Player | string;
     createdAt: string;
     updatedAt: string;
 }

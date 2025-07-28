@@ -92,9 +92,9 @@ export const useGameStore = create<GameStore>((set) => ({
         try {
             const response = await playTurnAction(roomId, generatedNumber);
             if (response?.success && response.data) {
-                const game = response.data as GameRoom;
+                const game = response.data;
                 console.log('Played turn successfully:', game);
-                toast.success('Played turn successfully ' + game._id);
+                toast.success('Played turn successfully ' + game, { description: 'Generated number: ' + game.generatedNumber, });
 
                 // Optionally update the store
                 set((state) => ({

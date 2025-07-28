@@ -17,11 +17,13 @@ import { useGameStore } from '@/store/game.store';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 import { GameRoom } from '@/type/types';
+import { useRouter } from 'next/navigation';
 
 export default function CreateRoomDialog() {
     const [bet, setBet] = useState('');
     const [timeout, setTimeout] = useState('');
     const [isCreating, setIsCreating] = useState(false);
+    const router = useRouter();
 
     //   const { toast } = useToast();
     const addGame = useGameStore((s) => s.addGame);
@@ -39,6 +41,8 @@ export default function CreateRoomDialog() {
             setIsCreating(true);
             const newGame = await createGameAction({ bet: betVal, timeout: timeoutVal } as GameRoom);
             toast('Room created!', { description: 'Game room successfully created ' + newGame.data._id });
+            addGame(newGame.data);
+            router.push(`/game/${newGame.data._id}`);
         } catch (error) {
             if (error instanceof AxiosError) {
                 toast.error("Error", {

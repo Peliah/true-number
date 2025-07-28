@@ -7,10 +7,11 @@ import { useGameStore } from '@/store/game.store';
 
 type UseGameEventsProps = {
     gameId: string;
+    onGameStarted?: (game: GameRoom) => void;
     onGameFinished?: (game: GameRoom) => void;
 };
 
-export function useGameEvents({ gameId, onGameFinished }: UseGameEventsProps) {
+export function useGameEvents({ gameId, onGameFinished, onGameStarted }: UseGameEventsProps) {
     const { updateGameRoom } = useGameStore();
 
     useEffect(() => {
@@ -21,10 +22,14 @@ export function useGameEvents({ gameId, onGameFinished }: UseGameEventsProps) {
         const setup = async () => {
             const socket = await getSocket();
 
-            // Join the game room for this gameId
             socket.emit(EventType.JOIN_GAME, { gameId });
 
-            // Listen for the game finished event only
+            socket.on(EventType.GAME_STARTED, (game: GameRoom) => {
+                console.log('🎮 GAME_STARTED received:', game);
+                updateGameRoom(game);
+                onGameStarted?.(game);
+            });
+
             socket.on(EventType.GAME_FINISHED, (game: GameRoom) => {
                 if (!isMounted) return;
                 console.log('🏁 GAME_FINISHED received:', game);
@@ -38,6 +43,7 @@ export function useGameEvents({ gameId, onGameFinished }: UseGameEventsProps) {
         return () => {
             isMounted = false;
             getSocket().then((socket) => {
+                socket.off(EventType.GAME_STARTED);
                 socket.off(EventType.GAME_FINISHED);
             });
         };
