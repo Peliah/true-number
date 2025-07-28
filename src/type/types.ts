@@ -41,3 +41,34 @@ export interface User {
     bio?: string;
     balance: number;
 }
+
+export type GameStatus = 'pending' | 'active' | 'finished';
+
+export type Player = {
+    _id: string;
+    username: string;
+};
+
+export interface GameRoom {
+    _id: string;
+    creator: Player;
+    joiner?: Player | null;
+    bet: number;
+    timeout: number;
+    status: GameStatus;
+    turn: 1 | 2;
+    creatorNumber?: number;
+    joinerNumber?: number;
+    winner?: Player | string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export enum EventType {
+    GAME_CREATED = 'gameCreated',
+    GAME_STARTED = 'gameStarted',
+    GAME_FINISHED = 'gameFinished',
+    JOIN_GAME = 'joinGameRoom',
+    PLAYER_FORFEIT = 'playerForfeit',
+    PLAYER_MOVE = 'playerMove',
+}

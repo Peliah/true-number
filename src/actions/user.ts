@@ -74,8 +74,8 @@ export async function getUserByIdAction(id: string) {
         return { error: "Not authenticated" };
     }
     try {
-        const response = await api.get(`/users/${id}`);
-        return { success: true, user: response.data.user };
+        const response = await createAuthedServerApi(accessToken).get(`/users/${id}`);
+        return { success: true, user: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
             console.log(error.response?.data);

@@ -2,6 +2,7 @@ import axios from "axios";
 import { refreshTokenAction } from "./auth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL_V2 = process.env.NEXT_PUBLIC_API_BASE_URL_V2;
 // Create axios instance
 export const api = axios.create({
     baseURL: API_BASE_URL,
@@ -70,6 +71,16 @@ export const serverApi = axios.create({
 export const createAuthedServerApi = (token: string) => {
     return axios.create({
         baseURL: API_BASE_URL,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+};
+
+export const createAuthedServerApiV2 = (token: string) => {
+    return axios.create({
+        baseURL: API_BASE_URL_V2,
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
