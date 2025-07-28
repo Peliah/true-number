@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getAllGamesAction, joinGameAction } from '@/actions/game';
+import { getAllGamesAction, getGameByIdAction, joinGameAction, playTurnAction } from '@/actions/game';
 import { EventType, type GameRoom } from '@/type/types';
 import { toast } from 'sonner';
 import { getSocket } from '@/lib/sockets';
@@ -12,6 +12,8 @@ interface GameStore {
     fetchRooms: () => Promise<void>;
     joinRoom: (roomId: string) => Promise<void>;
     updateGameRoom: (updatedRoom: GameRoom) => void;
+    getGameRoom: (roomId: string) => Promise<GameRoom>;
+    playGame: (roomId: string, generatedNumber: number) => Promise<GameRoom | undefined>;
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -70,4 +72,50 @@ export const useGameStore = create<GameStore>((set) => ({
                 ...state.gameRooms.filter((r) => r._id !== room._id),
             ],
         })),
+
+    getGameRoom: async (roomId) => {
+        try {
+            const response = await getGameByIdAction(roomId);
+            if (response?.success) {
+                return response.data;
+            } else {
+                return undefined;
+            }
+        } catch (err) {
+            console.error('Error joining room:', err);
+            toast.error('Error joining room ' + (err as Error).message);
+            return undefined;
+        }
+    },
+
+    playGame: async (roomId, generatedNumber) => {
+        try {
+            const response = await playTurnAction(roomId, generatedNumber);
+            if (response?.success && response.data) {
+                const game = response.data as GameRoom;
+                console.log('Played turn successfully:', game);
+                toast.success('Played turn successfully ' + game._id);
+
+                // Optionally update the store
+                set((state) => ({
+                    gameRooms: [
+                        game,
+                        ...state.gameRooms.filter((r) => r._id !== game._id),
+                    ],
+                }));
+
+                return game;
+            } else {
+                console.error('Failed to play turn:', response.error);
+                toast.error('Failed to play turn');
+                return undefined;
+            }
+        } catch (err) {
+            console.error('Error playing turn:', err);
+            toast.error('Error playing turn ' + (err as Error).message);
+            return undefined;
+        }
+    },
+
+
 }));

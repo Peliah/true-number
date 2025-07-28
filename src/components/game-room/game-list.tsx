@@ -14,7 +14,7 @@ import { useGameSocket } from '@/hooks/use-socket-listeners';
 
 export default function GameRoomList() {
     const router = useRouter();
-    const { gameRooms, isLoading, error, joinRoom } = useGameStore();
+    const { gameRooms, isLoading, error, joinRoom, updateGameRoom } = useGameStore();
     const { user } = useUserStore();
 
     //socket listener hook
@@ -22,10 +22,12 @@ export default function GameRoomList() {
 
     const handleJoin = async (room: GameRoom) => {
         if (user?._id === room.creator._id) {
+            updateGameRoom(room);
             router.push(`/game/${room._id}`);
         } else {
             await joinRoom(room._id);
             toast.success('Joined room successfully ' + room._id);
+            updateGameRoom(room);
             router.push(`/game/${room._id}`);
         }
     };

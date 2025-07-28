@@ -87,3 +87,42 @@ export async function joinGameAction(gameId: string) {
         return { error: "Failed to join game" };
     }
 }
+
+export async function getGameByIdAction(gameId: string) {
+    const accessToken = (await cookies()).get("access_token")?.value;
+
+    if (!accessToken) {
+        return { error: "Not authenticated" };
+    }
+
+
+    try {
+        const response = await createAuthedServerApiV2(accessToken).get(`/games/${gameId}`);
+        return { success: true, data: response.data };
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.log(error.response?.data);
+            return { error: error.response?.data || "Failed to get game" };
+        }
+        return { error: "Failed to get game" };
+    }
+}
+
+export async function playTurnAction(gameId: string, generatedNumber: number) {
+    const access_token = (await cookies()).get("access_token")?.value;
+
+    if (!access_token) {
+        return { error: "Not authenticated" };
+    }
+
+    try {
+        const response = await createAuthedServerApiV2(access_token).post(`/games/${gameId}/play`, { generatedNumber });
+        return { success: true, data: response.data };
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.log(error.response?.data);
+            return { error: error.response?.data || "Failed to play turn" };
+        }
+        return { error: "Failed to play turn" };
+    }
+}
