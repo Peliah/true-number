@@ -72,3 +72,5 @@ export enum EventType {
     PLAYER_FORFEIT = 'playerForfeit',
     PLAYER_MOVE = 'playerMove',
 }
+
+export type GameStatusFilter = 'all' | 'pending' | 'active' | 'finished';

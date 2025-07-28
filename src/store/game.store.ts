@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { forfietGame, getAllGamesAction, getGameByIdAction, joinGameAction, playTurnAction } from '@/actions/game';
-import { EventType, type GameRoom } from '@/type/types';
+import { EventType, GameStatusFilter, type GameRoom } from '@/type/types';
 import { toast } from 'sonner';
 import { getSocket } from '@/lib/sockets';
 
@@ -8,33 +8,37 @@ interface GameStore {
     gameRooms: GameRoom[];
     isLoading: boolean;
     error: string | null;
+    statusFilter: GameStatusFilter;
     addGame: (game: GameRoom) => void;
-    fetchRooms: () => Promise<void>;
+    fetchRooms: (status?: GameStatusFilter) => Promise<void>;
     joinRoom: (roomId: string) => Promise<void>;
     updateGameRoom: (updatedRoom: GameRoom) => void;
     getGameRoom: (roomId: string) => Promise<GameRoom>;
     playGame: (roomId: string, generatedNumber: number) => Promise<GameRoom | undefined>;
     forfeitGame: (roomId: string) => Promise<GameRoom | undefined>;
+    setStatusFilter?: (filter: GameStatusFilter) => void;
 }
 
 export const useGameStore = create<GameStore>((set) => ({
     gameRooms: [],
     isLoading: false,
     error: null,
+    statusFilter: 'all',
 
     addGame: (game) =>
         set((state) => ({
             gameRooms: [game, ...(state.gameRooms || [])],
         })),
 
-    fetchRooms: async () => {
+    fetchRooms: async (status = 'all') => {
         set({ isLoading: true, error: null });
 
         try {
-            const response = await getAllGamesAction();
+            const apiStatus = status === 'all' ? undefined : status;
+            const response = await getAllGamesAction(apiStatus);
 
             if (response?.success) {
-                set({ gameRooms: response.games });
+                set({ gameRooms: response.games, statusFilter: status });
             } else {
                 set({ error: response.error || 'Failed to fetch games' });
             }
@@ -43,6 +47,10 @@ export const useGameStore = create<GameStore>((set) => ({
         } finally {
             set({ isLoading: false });
         }
+    },
+
+    setStatusFilter: (filter) => {
+        set({ statusFilter: filter });
     },
 
     joinRoom: async (roomId) => {
