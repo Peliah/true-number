@@ -70,4 +70,5 @@ export enum EventType {
     GAME_FINISHED = 'gameFinished',
     JOIN_GAME = 'joinGameRoom',
     PLAYER_FORFEIT = 'playerForfeit',
+    PLAYER_MOVE = 'playerMove',
 }

@@ -26,7 +26,7 @@ export default function CreateRoomDialog() {
     const router = useRouter();
 
     //   const { toast } = useToast();
-    const addGame = useGameStore((s) => s.addGame);
+    // const addGame = useGameStore((s) => s.addGame);
 
     const handleCreateRoom = async () => {
         const betVal = Number(bet);
@@ -41,7 +41,7 @@ export default function CreateRoomDialog() {
             setIsCreating(true);
             const newGame = await createGameAction({ bet: betVal, timeout: timeoutVal } as GameRoom);
             toast('Room created!', { description: 'Game room successfully created ' + newGame.data._id });
-            addGame(newGame.data);
+            // addGame(newGame.data);
             router.push(`/game/${newGame.data._id}`);
         } catch (error) {
             if (error instanceof AxiosError) {

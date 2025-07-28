@@ -31,7 +31,8 @@ export function useGameSocket() {
             });
 
             (await socket).on(EventType.GAME_CREATED, async (newRoom: GameRoom) => {
-                addGame(newRoom);
+                // addGame(newRoom);
+                await fetchRooms();
 
                 if (user?._id === newRoom.creator._id && socket) {
                     (await socket).emit(EventType.JOIN_GAME, { gameId: newRoom._id });

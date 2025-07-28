@@ -92,6 +92,7 @@ export const useGameStore = create<GameStore>((set) => ({
     playGame: async (roomId, generatedNumber) => {
         try {
             const response = await playTurnAction(roomId, generatedNumber);
+            console.log(response);
             if (response?.success && response.data) {
                 const game = response.data;
                 console.log('Played turn successfully:', game);
@@ -118,11 +119,14 @@ export const useGameStore = create<GameStore>((set) => ({
         }
     },
     forfeitGame: async (roomId) => {
+        console.log(roomId);
         try {
             const response = await forfietGame(roomId);
+            console.log(response);
+
             if (response?.success && response.data) {
                 const game = response.data;
-                console.log('Forfiet game successfully:', game);
+                console.log('Forfiet game successfully:', response);
                 toast.success('Forfiet game successfully ' + game);
 
                 // Optionally update the store
@@ -143,6 +147,9 @@ export const useGameStore = create<GameStore>((set) => ({
             console.error('Error forfieting game:', err);
             toast.error('Error forfieting game ' + (err as Error).message);
             return undefined;
+        } finally {
+            console.log('finally');
+
         }
     }
 

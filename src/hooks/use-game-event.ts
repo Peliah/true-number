@@ -9,9 +9,10 @@ type UseGameEventsProps = {
     gameId: string;
     onGameStarted?: (game: GameRoom) => void;
     onGameFinished?: (game: GameRoom) => void;
+    onPlayerMove?: (game: GameRoom) => void;
 };
 
-export function useGameEvents({ gameId, onGameFinished, onGameStarted }: UseGameEventsProps) {
+export function useGameEvents({ gameId, onGameFinished, onGameStarted, onPlayerMove }: UseGameEventsProps) {
     const { updateGameRoom } = useGameStore();
 
     useEffect(() => {
@@ -36,6 +37,13 @@ export function useGameEvents({ gameId, onGameFinished, onGameStarted }: UseGame
                 updateGameRoom(game);
                 onGameFinished?.(game);
             });
+
+            socket.on(EventType.PLAYER_MOVE, (game: GameRoom) => {
+                if (!isMounted) return;
+                console.log('🎯 PLAYER_MOVE received:', game);
+                updateGameRoom(game);
+                onPlayerMove?.(game);
+            });
         };
 
         setup();
@@ -45,6 +53,7 @@ export function useGameEvents({ gameId, onGameFinished, onGameStarted }: UseGame
             getSocket().then((socket) => {
                 socket.off(EventType.GAME_STARTED);
                 socket.off(EventType.GAME_FINISHED);
+                socket.off(EventType.PLAYER_MOVE);
             });
         };
     }, [gameId, onGameFinished, updateGameRoom]);

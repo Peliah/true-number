@@ -22,7 +22,7 @@ export default function GameRoomList() {
 
     const handleJoin = async (room: GameRoom) => {
         if (user?._id === room.creator._id) {
-            updateGameRoom(room);
+            // updateGameRoom(room);
             router.push(`/game/${room._id}`);
         } else {
             await joinRoom(room._id);

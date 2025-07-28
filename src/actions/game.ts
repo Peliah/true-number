@@ -38,8 +38,6 @@ export async function getAllGamesAction() {
 
     try {
         const response = await createAuthedServerApiV2(accessToken).get("/games");
-        console.log(response.data);
-
         return { success: true, games: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -135,9 +133,13 @@ export async function forfietGame(gameId: string) {
     }
     try {
         const response = await createAuthedServerApiV2(accessToken).post(`/games/${gameId}/forfeit`);
+        console.log(response);
+
         return { success: true, data: response.data };
     } catch (error) {
+
         if (error instanceof AxiosError) {
+            console.log(error.response);
             console.log(error.response?.data);
             return { error: error.response?.data || "Failed to forfiet game" };
         }
