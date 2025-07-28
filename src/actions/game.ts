@@ -29,7 +29,7 @@ export async function saveGameAction(gameData: Game) {
     }
 }
 
-export async function getAllGamesAction() {
+export async function getAllGamesAction(status?: 'pending' | 'active' | 'finished') {
     const accessToken = (await cookies()).get("access_token")?.value;
 
     if (!accessToken) {
@@ -37,7 +37,11 @@ export async function getAllGamesAction() {
     }
 
     try {
-        const response = await createAuthedServerApiV2(accessToken).get("/games");
+        const response = await createAuthedServerApiV2(accessToken).get("/games", {
+            params: {
+                status: status // Add status filter if provided
+            }
+        });
         return { success: true, games: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
