@@ -71,8 +71,6 @@ export default function GamePage() {
     };
 
     const handleCountComplete = async () => {
-        console.log("count is complete");
-        console.log(gameState);
 
         if (!user) {
             toast.error('You must be logged in to play');
@@ -93,7 +91,6 @@ export default function GamePage() {
 
         toast.warning('Time out! You forfeited the game.');
         const updatedGame = await forfietGame(params!);
-        console.log(updatedGame);
         if (updatedGame) {
             setGameState(updatedGame.data);
         }
@@ -124,9 +121,6 @@ export default function GamePage() {
     const isMyTurn =
         (gameState?.turn === 1 && (gameState?.creator._id || gameState?.creator) as string === user?._id) ||
         (gameState?.turn === 2 && (gameState?.joiner?._id || gameState?.joiner) === user?._id);
-
-    console.log(isMyTurn);
-
 
     return (
         <div className="container mx-auto px-4 py-8 font-roboto-mono">

@@ -37,9 +37,6 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
         try {
             const result = await getAllUsersAction()
-            console.log(result);
-
-
             if (result.success) {
                 set({
                     users: result.users || [],

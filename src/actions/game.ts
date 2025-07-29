@@ -21,7 +21,6 @@ export async function saveGameAction(gameData: Game) {
         return { success: true, data: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
 
             return { error: error.response?.data || "Failed to save game history" };
         }
@@ -45,7 +44,6 @@ export async function getAllGamesAction(status?: 'pending' | 'active' | 'finishe
         return { success: true, games: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to get games" };
         }
         return { error: "Failed to get games" };
@@ -64,7 +62,6 @@ export async function createGameAction(gameData: GameRoom) {
         return { success: true, data: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to create game" };
         }
         return { error: "Failed to create game" };
@@ -83,7 +80,6 @@ export async function joinGameAction(gameId: string) {
         return { success: true, data: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to join game" };
         }
         return { error: "Failed to join game" };
@@ -103,7 +99,6 @@ export async function getGameByIdAction(gameId: string) {
         return { success: true, data: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to get game" };
         }
         return { error: "Failed to get game" };
@@ -122,7 +117,6 @@ export async function playTurnAction(gameId: string, generatedNumber: number) {
         return { success: true, data: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to play turn" };
         }
         return { error: "Failed to play turn" };
@@ -137,14 +131,11 @@ export async function forfietGame(gameId: string) {
     }
     try {
         const response = await createAuthedServerApiV2(accessToken).post(`/games/${gameId}/forfeit`);
-        console.log(response);
 
         return { success: true, data: response.data };
     } catch (error) {
 
         if (error instanceof AxiosError) {
-            console.log(error.response);
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to forfiet game" };
         }
         return { error: "Failed to forfiet game" };

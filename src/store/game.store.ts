@@ -57,20 +57,16 @@ export const useGameStore = create<GameStore>((set) => ({
         try {
             const response = await joinGameAction(roomId);
             if (response?.success) {
-                console.log('Joined room successfully:', response.data);
                 toast.success('Joined room successfully ' + response.data._id);
 
                 // Emit joinGameRoom socket event AFTER HTTP success
                 const socket = await getSocket();
                 socket.emit(EventType.JOIN_GAME, { gameId: roomId });
-                console.log('🎮 Emitted JOIN_GAME_ROOM:', roomId);
 
             } else {
-                console.error('Failed to join room:', response.error);
                 toast.error('Failed to join room');
             }
         } catch (err) {
-            console.error('Error joining room:', err);
             toast.error('Error joining room ' + (err as Error).message);
         }
     },
@@ -91,7 +87,6 @@ export const useGameStore = create<GameStore>((set) => ({
                 return undefined;
             }
         } catch (err) {
-            console.error('Error joining room:', err);
             toast.error('Error joining room ' + (err as Error).message);
             return undefined;
         }
@@ -100,10 +95,8 @@ export const useGameStore = create<GameStore>((set) => ({
     playGame: async (roomId, generatedNumber) => {
         try {
             const response = await playTurnAction(roomId, generatedNumber);
-            console.log(response);
             if (response?.success && response.data) {
                 const game = response.data;
-                console.log('Played turn successfully:', game);
                 toast.success('Played turn successfully ', { description: 'Generated number: ' + game.generatedNumber, });
 
                 // Optionally update the store
@@ -116,25 +109,20 @@ export const useGameStore = create<GameStore>((set) => ({
 
                 return game;
             } else {
-                console.error('Failed to play turn:', response.error);
                 toast.error('Failed to play turn');
                 return undefined;
             }
         } catch (err) {
-            console.error('Error playing turn:', err);
             toast.error('Error playing turn ' + (err as Error).message);
             return undefined;
         }
     },
     forfeitGame: async (roomId) => {
-        console.log(roomId);
         try {
             const response = await forfietGame(roomId);
-            console.log(response);
 
             if (response?.success && response.data) {
                 const game = response.data;
-                console.log('Forfiet game successfully:', response);
                 toast.success('Forfiet game successfully ' + game);
 
                 // Optionally update the store
@@ -147,16 +135,13 @@ export const useGameStore = create<GameStore>((set) => ({
 
                 return game;
             } else {
-                console.error('Failed to forfiet game:', response.error);
                 toast.error('Failed to forfiet game');
                 return undefined;
             }
         } catch (err) {
-            console.error('Error forfieting game:', err);
             toast.error('Error forfieting game ' + (err as Error).message);
             return undefined;
         } finally {
-            console.log('finally');
 
         }
     }

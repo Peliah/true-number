@@ -29,7 +29,6 @@ export function GameResultDialog({ open, winnerId, onClose }: GameResultDialogPr
                 setError(null);
                 try {
                     const result = await getUserByIdAction(winnerId);
-                    console.log(result);
 
                     setWinnerName(result.user.username);
                 } catch (err) {

@@ -36,7 +36,6 @@ export function LoginForm() {
         setError("");
 
         const result = await loginAction(data);
-        console.log(result);
 
         if (result.error) {
             setError(result.error);

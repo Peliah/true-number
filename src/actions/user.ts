@@ -22,7 +22,6 @@ export async function getCurrentUserAction() {
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to get user" };
         }
         return { error: "Failed to get user" };
@@ -57,7 +56,6 @@ export async function getAllUsersAction({ limit = 10, offset = 0 } = {}) {
         };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.error("Error fetching users:", error.response?.data);
             return { error: error.response?.data || "Failed to get users" };
         }
 
@@ -78,7 +76,6 @@ export async function getUserByIdAction(id: string) {
         return { success: true, user: response.data };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to get user" };
         }
         return { error: "Failed to get user" };
@@ -97,7 +94,6 @@ export async function updateUserByIdAction(id: string, data: UserFormValues) {
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to update user" };
         }
         return { error: "Failed to update user" };
@@ -107,7 +103,6 @@ export async function updateUserByIdAction(id: string, data: UserFormValues) {
 // delete user by id
 export async function deleteUserByIdAction(id: string) {
     const accessToken = (await cookies()).get("access_token")?.value;
-    console.log(accessToken);
 
     if (!accessToken) {
         return { error: "Not authenticated" };
@@ -117,7 +112,6 @@ export async function deleteUserByIdAction(id: string) {
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to delete user" };
         }
         return { error: "Failed to delete user" };
@@ -136,7 +130,6 @@ export async function createUserAction(data: UserFormValues, password: string) {
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to create user" };
         }
         return { error: "Failed to create user" };
@@ -152,12 +145,10 @@ export async function updateCurrentUserAction(data: UserFormValues) {
     }
     try {
         const response = await createAuthedServerApi(accessToken).put("/users/me", data);
-        console.log(response.data.user);
 
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to update user" };
         }
         return { error: "Failed to update user" };

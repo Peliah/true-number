@@ -65,10 +65,6 @@ export function UserFormDialog({ isOpen, onOpenChange, currentUser }: UserFormDi
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser]);
 
-    console.log(currentUser);
-
-
-
 
     const onSubmit = async (data: UserFormValues) => {
         setIsSubmitting(true);

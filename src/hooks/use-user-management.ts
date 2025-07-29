@@ -8,8 +8,6 @@ export function useUserManagement() {
     const { fetchDashboardData } = useDashboardStore();
 
     const handleDeleteUser = async (userId: string) => {
-        console.log(userId);
-
         try {
             const result = await deleteUserByIdAction(userId);
 

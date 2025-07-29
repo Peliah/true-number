@@ -21,7 +21,6 @@ export async function getHistoryAction() {
         return { success: true, history: response.data.history };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to get history" };
         }
         return { error: "Failed to get history" };
@@ -45,7 +44,6 @@ export async function getAllHistoryAction() {
         return { success: true, history: response.data.history };
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.log(error.response?.data);
             return { error: error.response?.data || "Failed to get history" };
         }
         return { error: "Failed to get history" };

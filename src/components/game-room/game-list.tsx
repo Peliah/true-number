@@ -87,10 +87,10 @@ export default function GameRoomList() {
                     <Card
                         key={room._id || Math.random().toString(36).substring(2, 9)}
                         className={`flex flex-col justify-between border-l-4 ${room.status === 'pending'
-                                ? 'border-l-yellow-400 hover:bg-yellow-50'
-                                : room.status === 'active'
-                                    ? 'border-l-green-400 hover:bg-green-50'
-                                    : 'border-l-gray-400 hover:bg-gray-50'
+                            ? 'border-l-yellow-400 hover:bg-yellow-50'
+                            : room.status === 'active'
+                                ? 'border-l-green-400 hover:bg-green-50'
+                                : 'border-l-gray-400 hover:bg-gray-50'
                             } transition-colors`}
                     >
                         <CardHeader>
@@ -105,10 +105,10 @@ export default function GameRoomList() {
                                 </div>
                                 <span
                                     className={`px-2 py-1 rounded-full text-xs font-medium ${room.status === 'pending'
-                                            ? 'bg-yellow-100 text-yellow-800'
-                                            : room.status === 'active'
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-gray-100 text-gray-800'
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : room.status === 'active'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-gray-100 text-gray-800'
                                         }`}
                                 >
                                     {room.status
@@ -152,11 +152,11 @@ export default function GameRoomList() {
                                 <Button
                                     size="sm"
                                     className={`mt-3 w-full ${room.creator?._id === user?._id
-                                            ? 'bg-yellow-600 hover:bg-yellow-700'
-                                            : 'bg-green-600 hover:bg-green-700'
+                                        ? 'bg-yellow-600 hover:bg-yellow-700'
+                                        : 'bg-green-600 hover:bg-green-700'
                                         }`}
                                     onClick={() => handleJoin(room)}
-                                    disabled={!room._id} // Disable if no room ID
+                                    disabled={!room._id}
                                 >
                                     {room.creator?._id === user?._id ? 'Enter Game' : 'Join Game'}
                                 </Button>
