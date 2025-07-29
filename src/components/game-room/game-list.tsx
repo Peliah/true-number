@@ -23,7 +23,6 @@ export default function GameRoomList() {
 
     const handleJoin = async (room: GameRoom) => {
         if (user?._id === room.creator._id) {
-            // updateGameRoom(room);
             router.push(`/game/${room._id}`);
         } else {
             await joinRoom(room._id);
@@ -33,7 +32,7 @@ export default function GameRoomList() {
         }
     };
 
-    // Add filter controls
+    // filter controls
     const handleFilterChange = (filter: 'all' | 'pending' | 'active' | 'finished') => {
         fetchRooms(filter);
     };
