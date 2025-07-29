@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { User } from '@/type/types';
 import { useUserStore } from '@/store/user.store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +15,7 @@ import { Pencil, Save, X, User as UserIcon, Mail, Phone, FileText, Coins, Camera
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { userFormSchema } from '@/schema/user-schema';
-import { updateCurrentUserAction, updateUserByIdAction } from '@/actions/user';
+import { updateCurrentUserAction } from '@/actions/user';
 
 export default function ProfilePage() {
     const { user, setUser } = useUserStore();
@@ -75,15 +74,6 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background font-roboto-mono flex items-center justify-center">
-            {/* <div className="relative bg-gradient-to-r from-primary/80 via-primary to-primary/80 h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-10 left-10 w-4 h-4 bg-white/20 rounded-full animate-pulse"></div>
-                    <div className="absolute top-20 right-20 w-3 h-3 bg-white/20 rounded-full animate-pulse delay-75"></div>
-                    <div className="absolute bottom-10 left-1/3 w-2 h-2 bg-white/20 rounded-full animate-pulse delay-150"></div>
-                    <div className="absolute top-1/2 right-1/4 w-3 h-3 bg-white/20 rounded-full animate-pulse delay-300"></div>
-                </div>
-            </div> */}
 
             <div className="max-w-6xl mx-auto px-6 relative z-10 pb-12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
