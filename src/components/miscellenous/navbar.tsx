@@ -72,7 +72,7 @@ export function Navbar() {
                 </Popover>
             ) : (
                 <Link
-                    href="/login"
+                    href="/"
                     className="text-sm font-medium text-blue-600 hover:underline"
                 >
                     <LogInIcon className="mr-2 h-4 w-4" />
