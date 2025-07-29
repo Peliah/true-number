@@ -104,7 +104,7 @@ export const useGameStore = create<GameStore>((set) => ({
             if (response?.success && response.data) {
                 const game = response.data;
                 console.log('Played turn successfully:', game);
-                toast.success('Played turn successfully ' + game, { description: 'Generated number: ' + game.generatedNumber, });
+                toast.success('Played turn successfully ', { description: 'Generated number: ' + game.generatedNumber, });
 
                 // Optionally update the store
                 set((state) => ({

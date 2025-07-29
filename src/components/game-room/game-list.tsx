@@ -83,33 +83,37 @@ export default function GameRoomList() {
             </header>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {gameRooms.map((room: GameRoom) => (
+                {gameRooms?.map((room: GameRoom) => (
                     <Card
-                        key={room._id}
+                        key={room._id || Math.random().toString(36).substring(2, 9)}
                         className={`flex flex-col justify-between border-l-4 ${room.status === 'pending'
-                            ? 'border-l-yellow-400 hover:bg-yellow-50'
-                            : room.status === 'active'
-                                ? 'border-l-green-400 hover:bg-green-50'
-                                : 'border-l-gray-400 hover:bg-gray-50'
+                                ? 'border-l-yellow-400 hover:bg-yellow-50'
+                                : room.status === 'active'
+                                    ? 'border-l-green-400 hover:bg-green-50'
+                                    : 'border-l-gray-400 hover:bg-gray-50'
                             } transition-colors`}
                     >
                         <CardHeader>
                             <div className="flex justify-between items-start">
                                 <div>
                                     <CardTitle className="text-lg">
-                                        Room #{room._id.slice(-5).toUpperCase()}
+                                        Room #{room._id?.slice(-5)?.toUpperCase() || 'N/A'}
                                     </CardTitle>
                                     <p className="text-sm text-muted-foreground">
                                         Created by <strong>{room.creator?.username || 'Unknown'}</strong>
                                     </p>
                                 </div>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${room.status === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : room.status === 'active'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-gray-100 text-gray-800'
-                                    }`}>
-                                    {room.status.charAt(0).toUpperCase() + room.status.slice(1)}
+                                <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${room.status === 'pending'
+                                            ? 'bg-yellow-100 text-yellow-800'
+                                            : room.status === 'active'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-gray-100 text-gray-800'
+                                        }`}
+                                >
+                                    {room.status
+                                        ? room.status.charAt(0).toUpperCase() + room.status.slice(1)
+                                        : 'Unknown'}
                                 </span>
                             </div>
                         </CardHeader>
@@ -121,14 +125,14 @@ export default function GameRoomList() {
                                         <CoinsIcon className="w-4 h-4" />
                                         Bet
                                     </p>
-                                    <p className="font-medium">{room.bet} coins</p>
+                                    <p className="font-medium">{room.bet || 0} coins</p>
                                 </div>
                                 <div>
                                     <p className="text-muted-foreground flex items-center gap-2">
                                         <TimerIcon className="w-4 h-4" />
                                         Timeout
                                     </p>
-                                    <p className="font-medium">{room.timeout} sec</p>
+                                    <p className="font-medium">{room.timeout || 0} sec</p>
                                 </div>
                             </div>
 
@@ -147,13 +151,14 @@ export default function GameRoomList() {
                             {room.status === 'pending' && (
                                 <Button
                                     size="sm"
-                                    className={`mt-3 w-full ${room.creator._id === user?._id
-                                        ? 'bg-yellow-600 hover:bg-yellow-700'
-                                        : 'bg-green-600 hover:bg-green-700'
+                                    className={`mt-3 w-full ${room.creator?._id === user?._id
+                                            ? 'bg-yellow-600 hover:bg-yellow-700'
+                                            : 'bg-green-600 hover:bg-green-700'
                                         }`}
                                     onClick={() => handleJoin(room)}
+                                    disabled={!room._id} // Disable if no room ID
                                 >
-                                    {room.creator._id === user?._id ? 'Enter Game' : 'Join Game'}
+                                    {room.creator?._id === user?._id ? 'Enter Game' : 'Join Game'}
                                 </Button>
                             )}
                         </CardContent>

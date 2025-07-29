@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function LoginForm() {
     const router = useRouter();
@@ -40,6 +41,7 @@ export function LoginForm() {
         if (result.error) {
             setError(result.error);
         } else if (result.success) {
+            toast.success("Logged in successfully!")
             router.push("/game");
             router.refresh();
         }

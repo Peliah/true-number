@@ -12,8 +12,10 @@ import { useGameEvents } from '@/hooks/use-game-event';
 import { GameResultDialog } from '@/components/game-room/game-result-dialog';
 import CountdownTimer from '@/components/game-room/game-timer';
 import { forfietGame } from '@/actions/game';
+import { useRouter } from 'next/navigation';
 
 export default function GamePage() {
+    const router = useRouter();
     const params = usePathname().split('/').pop();
     const { user } = useUserStore();
     const { getGameRoom, playGame } = useGameStore();
@@ -152,39 +154,13 @@ export default function GamePage() {
 
             <div className="w-full md:w-1/2 mx-auto">
                 <GameControls onGenerateNumber={generateNumber} />
-                {gameState?.status === 'active' && (
-                    <div className="mt-6 text-center space-y-2">
-                        {/* Current User's Number */}
-                        {(user?._id === (gameState.creator._id || gameState.creator)) && (
-                            <p className="text-lg">
-                                <span className="font-bold">{gameState.creatorNumber}</span>
-                            </p>
-                        )}
-                        {(user?._id === (gameState.joiner?._id || gameState.joiner)) && (
-                            <p className="text-lg">
-                                Your number: <span className="font-bold">{gameState.joinerNumber}</span>
-                            </p>
-                        )}
 
-                        {/* Opponent's Number */}
-                        {(user?._id !== (gameState.creator._id || gameState.creator)) && (
-                            <p className="text-lg">
-                                Opponent&apos;s number: <span className="font-bold">{gameState.creatorNumber}</span>
-                            </p>
-                        )}
-                        {(user?._id !== (gameState.joiner?._id || gameState.joiner)) && (
-                            <p className="text-lg">
-                                Opponent&apos;s number: <span className="font-bold">{gameState.joinerNumber}</span>
-                            </p>
-                        )}
-                    </div>
-                )}
             </div>
 
             <GameResultDialog
                 open={showWinnerModal}
                 winnerId={winnerName}
-                onClose={() => setShowWinnerModal(false)}
+                onClose={() => { setShowWinnerModal(false); router.push('/game'); }}
             />
         </div>
     );
