@@ -145,10 +145,22 @@ export async function updateCurrentUserAction(data: UserFormValues) {
     }
     try {
         const response = await createAuthedServerApi(accessToken).put("/users/me", data);
+        console.log(response.data);
 
         return { success: true, user: response.data.user };
     } catch (error) {
         if (error instanceof AxiosError) {
+            const apiError = error.response?.data;
+
+            if (apiError?.code === "ValidationError") {
+                const fieldErrors: Record<string, string> = {};
+                for (const key in apiError.errors) {
+                    if (apiError.errors[key]?.msg) {
+                        fieldErrors[key] = apiError.errors[key].msg;
+                    }
+                }
+                return { error: "Validation failed", fieldErrors };
+            }
             return { error: error.response?.data || "Failed to update user" };
         }
         return { error: "Failed to update user" };

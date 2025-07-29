@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Pencil, Save, X, User as UserIcon, Mail, Phone, FileText, Coins, Camera } from 'lucide-react';
 import { z } from 'zod';
 import { toast } from 'sonner';
@@ -22,12 +23,7 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors },
-    } = useForm<z.infer<typeof userFormSchema>>({
+    const form = useForm<z.infer<typeof userFormSchema>>({
         resolver: zodResolver(userFormSchema),
         defaultValues: {
             username: user?.username || '',
@@ -47,19 +43,38 @@ export default function ProfilePage() {
         setIsLoading(true);
         try {
             const updatedUser = await updateCurrentUserAction(data);
-            setUser(updatedUser.user);
-            toast.success('Profile updated successfully');
-            setIsEditing(false);
+            console.log(updatedUser);
+
+            if (updatedUser.fieldErrors) {
+                for (const [field, message] of Object.entries(updatedUser.fieldErrors)) {
+                    form.setError(field as keyof z.infer<typeof userFormSchema>, { type: "server", message });
+                }
+                return;
+            }
+
+            if (updatedUser.error && !updatedUser.fieldErrors) {
+                toast.error(updatedUser.error, {
+                    description: "Please check your details and try again",
+                    duration: 3000,
+                });
+                return;
+            }
+
+            if (updatedUser.user) {
+                setUser(updatedUser.user);
+                toast.success('Profile updated successfully');
+                setIsEditing(false);
+            }
         } catch (error) {
             toast.error('Failed to update profile');
-            console.log(error)
+            console.log(error);
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleCancel = () => {
-        reset();
+        form.reset();
         setIsEditing(false);
     };
 
@@ -165,7 +180,7 @@ export default function ProfilePage() {
                                                 Cancel
                                             </Button>
                                             <Button
-                                                onClick={handleSubmit(onSubmit)}
+                                                onClick={form.handleSubmit(onSubmit)}
                                                 disabled={isLoading}
                                                 className="shadow-lg hover:shadow-xl transition-all duration-200"
                                             >
@@ -178,144 +193,193 @@ export default function ProfilePage() {
                             </CardHeader>
 
                             <CardContent className="space-y-6">
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="flex items-center text-sm font-medium text-foreground">
-                                                <UserIcon className="w-4 h-4 mr-2 text-primary" />
-                                                Username
-                                            </label>
-                                            {isEditing ? (
-                                                <div className="space-y-2">
-                                                    <Input
-                                                        {...register('username')}
-                                                        className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                                                    />
-                                                    {errors.username && (
-                                                        <p className="text-sm text-destructive flex items-center">
-                                                            {errors.username.message}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-foreground font-medium">
-                                                    {user.username}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <label className="flex items-center text-sm font-medium text-foreground">
-                                                <Mail className="w-4 h-4 mr-2 text-primary" />
-                                                Email
-                                            </label>
-                                            {isEditing ? (
-                                                <div className="space-y-2">
-                                                    <Input
-                                                        {...register('email')}
-                                                        type="email"
-                                                        className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                                                    />
-                                                    {errors.email && (
-                                                        <p className="text-sm text-destructive flex items-center">
-                                                            {errors.email.message}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-foreground">
-                                                    {user.email}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium text-foreground">First Name</label>
-                                            {isEditing ? (
-                                                <Input
-                                                    {...register('firstName')}
-                                                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                                                />
-                                            ) : (
-                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-muted-foreground">
-                                                    {user.firstName || 'Not provided'}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium text-foreground">Last Name</label>
-                                            {isEditing ? (
-                                                <Input
-                                                    {...register('lastName')}
-                                                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                                                />
-                                            ) : (
-                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-muted-foreground">
-                                                    {user.lastName || 'Not provided'}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="flex items-center text-sm font-medium text-foreground">
-                                            <Phone className="w-4 h-4 mr-2 text-primary" />
-                                            Phone
-                                        </label>
-                                        {isEditing ? (
-                                            <div className="space-y-2">
-                                                <Input
-                                                    {...register('phone')}
-                                                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                                                />
-                                                {errors.phone && (
-                                                    <p className="text-sm text-destructive flex items-center">
-                                                        {errors.phone.message}
-                                                    </p>
+                                <Form {...form}>
+                                    <div className="space-y-6">
+                                        {/* Username & Email */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <FormField
+                                                control={form.control}
+                                                name="username"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center text-sm font-medium text-foreground">
+                                                            <UserIcon className="w-4 h-4 mr-2 text-primary" />
+                                                            Username
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            {isEditing ? (
+                                                                <Input
+                                                                    {...field}
+                                                                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                                                />
+                                                            ) : (
+                                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-foreground font-medium">
+                                                                    {user.username}
+                                                                </div>
+                                                            )}
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
                                                 )}
-                                            </div>
-                                        ) : (
-                                            <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-foreground">
-                                                {user.phone}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="flex items-center text-sm font-medium text-foreground">
-                                            <FileText className="w-4 h-4 mr-2 text-primary" />
-                                            Bio
-                                        </label>
-                                        {isEditing ? (
-                                            <Textarea
-                                                {...register('bio')}
-                                                rows={4}
-                                                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 resize-none"
-                                                placeholder="Tell us about yourself..."
                                             />
-                                        ) : (
-                                            <div className="px-3 py-3 rounded-md bg-muted/50 border border-muted text-muted-foreground min-h-[100px]">
-                                                {user.bio || 'No bio provided yet'}
-                                            </div>
-                                        )}
-                                    </div>
 
-                                    {isEditing && (
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium text-foreground">
-                                                Profile Picture URL
-                                            </label>
-                                            <Input
-                                                {...register('profilePicture')}
-                                                placeholder="https://example.com/image.jpg"
-                                                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                            <FormField
+                                                control={form.control}
+                                                name="email"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center text-sm font-medium text-foreground">
+                                                            <Mail className="w-4 h-4 mr-2 text-primary" />
+                                                            Email
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            {isEditing ? (
+                                                                <Input
+                                                                    {...field}
+                                                                    type="email"
+                                                                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                                                />
+                                                            ) : (
+                                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-foreground">
+                                                                    {user.email}
+                                                                </div>
+                                                            )}
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
                                             />
                                         </div>
-                                    )}
-                                </div>
+
+                                        {/* First & Last Name */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <FormField
+                                                control={form.control}
+                                                name="firstName"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-sm font-medium text-foreground">First Name</FormLabel>
+                                                        <FormControl>
+                                                            {isEditing ? (
+                                                                <Input
+                                                                    {...field}
+                                                                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                                                />
+                                                            ) : (
+                                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-muted-foreground">
+                                                                    {user.firstName || 'Not provided'}
+                                                                </div>
+                                                            )}
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={form.control}
+                                                name="lastName"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-sm font-medium text-foreground">Last Name</FormLabel>
+                                                        <FormControl>
+                                                            {isEditing ? (
+                                                                <Input
+                                                                    {...field}
+                                                                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                                                />
+                                                            ) : (
+                                                                <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-muted-foreground">
+                                                                    {user.lastName || 'Not provided'}
+                                                                </div>
+                                                            )}
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
+                                        {/* Phone */}
+                                        <FormField
+                                            control={form.control}
+                                            name="phone"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center text-sm font-medium text-foreground">
+                                                        <Phone className="w-4 h-4 mr-2 text-primary" />
+                                                        Phone
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        {isEditing ? (
+                                                            <Input
+                                                                {...field}
+                                                                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                                            />
+                                                        ) : (
+                                                            <div className="px-3 py-2 rounded-md bg-muted/50 border border-muted text-foreground">
+                                                                {user.phone}
+                                                            </div>
+                                                        )}
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        {/* Bio */}
+                                        <FormField
+                                            control={form.control}
+                                            name="bio"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center text-sm font-medium text-foreground">
+                                                        <FileText className="w-4 h-4 mr-2 text-primary" />
+                                                        Bio
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        {isEditing ? (
+                                                            <Textarea
+                                                                {...field}
+                                                                rows={4}
+                                                                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20 resize-none"
+                                                                placeholder="Tell us about yourself..."
+                                                            />
+                                                        ) : (
+                                                            <div className="px-3 py-3 rounded-md bg-muted/50 border border-muted text-muted-foreground min-h-[100px]">
+                                                                {user.bio || 'No bio provided yet'}
+                                                            </div>
+                                                        )}
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        {/* Profile Picture URL - Only show when editing */}
+                                        {isEditing && (
+                                            <FormField
+                                                control={form.control}
+                                                name="profilePicture"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel className="text-sm font-medium text-foreground">
+                                                            Profile Picture URL
+                                                        </FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                placeholder="https://example.com/image.jpg"
+                                                                className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        )}
+                                    </div>
+                                </Form>
                             </CardContent>
                         </Card>
                     </div>

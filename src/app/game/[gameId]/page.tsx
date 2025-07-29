@@ -130,7 +130,6 @@ export default function GamePage() {
                         balance={user.balance}
                         bet={gameState.bet}
                     />
-                    {/* Display a nice timer */}
                     {isMyTurn ? (
                         <CountdownTimer
                             initialSeconds={gameState.timeout}
@@ -148,7 +147,31 @@ export default function GamePage() {
 
             <div className="w-full md:w-1/2 mx-auto">
                 <GameControls onGenerateNumber={generateNumber} />
+                {gameState && (
+                    <div className="mt-6 bg-gray-50 p-4 rounded-lg">
+                        <h3 className="text-lg font-semibold mb-3">Generated Numbers</h3>
 
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-white p-3 rounded shadow-sm">
+                                <p className="text-sm text-gray-500">Your number</p>
+                                <p className="text-xl font-bold">
+                                    {user?._id === (gameState.creator._id || gameState.creator) as string
+                                        ? gameState.creatorNumber || 'Not generated yet'
+                                        : gameState.joinerNumber || 'Not generated yet'}
+                                </p>
+                            </div>
+
+                            <div className="bg-white p-3 rounded shadow-sm">
+                                <p className="text-sm text-gray-500">Opponent&apos;s number</p>
+                                <p className="text-xl font-bold">
+                                    {user?._id === (gameState.creator._id || gameState.creator) as string
+                                        ? gameState.joinerNumber || 'Waiting...'
+                                        : gameState.creatorNumber || 'Waiting...'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <GameResultDialog
