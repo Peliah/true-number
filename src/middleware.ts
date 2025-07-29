@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
   const isAuthPage = request.nextUrl.pathname === "/" ||
     request.nextUrl.pathname.startsWith("/auth");
   const isProtectedPage = request.nextUrl.pathname.startsWith("/game") ||
-    request.nextUrl.pathname.startsWith("/dashboard");
+    request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/profile");
   const isDashboardPage = request.nextUrl.pathname.startsWith("/dashboard");
 
   // Check if token exists and is valid

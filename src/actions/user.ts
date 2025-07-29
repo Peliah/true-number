@@ -142,3 +142,24 @@ export async function createUserAction(data: UserFormValues, password: string) {
         return { error: "Failed to create user" };
     }
 };
+
+// update current user
+export async function updateCurrentUserAction(data: UserFormValues) {
+    const accessToken = (await cookies()).get("access_token")?.value;
+
+    if (!accessToken) {
+        return { error: "Not authenticated" };
+    }
+    try {
+        const response = await createAuthedServerApi(accessToken).put("/users/me", data);
+        console.log(response.data.user);
+
+        return { success: true, user: response.data.user };
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            console.log(error.response?.data);
+            return { error: error.response?.data || "Failed to update user" };
+        }
+        return { error: "Failed to update user" };
+    }
+};
