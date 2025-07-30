@@ -2,9 +2,11 @@
 
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Users, Gamepad2, TrendingUp, Activity } from 'lucide-react'
+import { Users, Gamepad2, Activity } from 'lucide-react'
 import { useDashboardStore } from '@/store/dashboard.store'
 import StatsCard from '@/components/miscellenous/stat-card';
+import { useGameStore } from '@/store/game.store';
+import { toast } from 'sonner';
 
 const DashboardPage = () => {
     const router = useRouter()
@@ -14,21 +16,18 @@ const DashboardPage = () => {
         fetchDashboardData,
         resetErrors,
         usersCount,
-        gamesPlayedCount,
         usersLoading,
         historyLoading,
         usersError,
         historyError
     } = useDashboardStore()
+    const { gameRooms } = useGameStore()
 
-    // Fetch data on component mount
     useEffect(() => {
         fetchDashboardData()
-
-        // Optional: Set up periodic refresh
         const interval = setInterval(() => {
             fetchDashboardData()
-        }, 5 * 60 * 1000) // Refresh every 5 minutes
+        }, 5 * 60 * 1000)
 
         return () => clearInterval(interval)
     }, [fetchDashboardData])
@@ -58,7 +57,6 @@ const DashboardPage = () => {
                 </button>
             </div>
 
-            {/* Stats Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
                 <StatsCard
                     title="Total Users"
@@ -73,7 +71,7 @@ const DashboardPage = () => {
 
                 <StatsCard
                     title="Games Played"
-                    count={gamesPlayedCount}
+                    count={gameRooms.length}
                     icon={<Gamepad2 className="w-5 h-5 text-primary" />}
                     description="Total games completed by all users"
                     onClick={handleHistoryClick}
@@ -82,7 +80,7 @@ const DashboardPage = () => {
                     trend={{ value: 8.3, isPositive: true }}
                 />
 
-                <StatsCard
+                {/* <StatsCard
                     title="Active Today"
                     count={89}
                     icon={<Activity className="w-5 h-5 text-primary" />}
@@ -98,7 +96,7 @@ const DashboardPage = () => {
                     description="Average session duration (minutes)"
                     onClick={() => router.push('/dashboard/')}
                     trend={{ value: 5.2, isPositive: false }}
-                />
+                /> */}
             </div>
 
             <div className="mt-8">
@@ -111,17 +109,17 @@ const DashboardPage = () => {
                         View All Users
                     </button>
                     <button
-                        onClick={handleHistoryClick}
+                        onClick={() => { toast.info('Feature coming soon...') }}
                         className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors duration-200 text-sm font-medium"
                     >
                         View Game History
                     </button>
-                    <button
-                        onClick={() => router.push('/dashboard/analytics')}
+                    {/* <button
+                        onClick={() => toast.info('Feature coming soon...')}
                         className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-colors duration-200 text-sm font-medium"
                     >
                         Analytics
-                    </button>
+                    </button> */}
                 </div>
             </div>
         </div>
