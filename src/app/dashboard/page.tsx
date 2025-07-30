@@ -6,12 +6,10 @@ import { Users, Gamepad2, Activity } from 'lucide-react'
 import { useDashboardStore } from '@/store/dashboard.store'
 import StatsCard from '@/components/miscellenous/stat-card';
 import { useGameStore } from '@/store/game.store';
-import { toast } from 'sonner';
 
 const DashboardPage = () => {
     const router = useRouter()
 
-    // Zustand store hooks - use direct property access instead of selectors
     const {
         fetchDashboardData,
         resetErrors,
@@ -99,7 +97,7 @@ const DashboardPage = () => {
                 /> */}
             </div>
 
-            <div className="mt-8">
+            {/* <div className="mt-8">
                 <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
                 <div className="flex flex-wrap gap-3">
                     <button
@@ -114,14 +112,14 @@ const DashboardPage = () => {
                     >
                         View Game History
                     </button>
-                    {/* <button
+                    <button
                         onClick={() => toast.info('Feature coming soon...')}
                         className="px-4 py-2 border border-border rounded-lg hover:bg-accent transition-colors duration-200 text-sm font-medium"
                     >
                         Analytics
-                    </button> */}
+                    </button>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
